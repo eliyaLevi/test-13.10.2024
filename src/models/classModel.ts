@@ -3,20 +3,15 @@ import { IUser } from "./UserModel";
 import { IScore } from "./scoreModel";
 
 export interface IClass extends Document {
-    teacher:  IUser["_id"];
-    student:  IUser["_id"];
     scores:   IScore["_id"];
+    user:  IUser["_id"];   
 }
 
 const ClassSchema = new Schema(
   {
-    teacher: {
+    user: {
         type: Schema.Types.ObjectId,
-        ref: "teacher",
-    },
-    student: {
-        type: Schema.Types.ObjectId,
-      ref: "student",
+        ref: "user",
     },
     scores: {
         type: [Schema.Types.ObjectId],

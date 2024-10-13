@@ -1,19 +1,25 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
 export interface IScore extends Document {
-  remark: string;
-  score: number;
+  
+  
+  scores: {
+    remark: string;
+    score: number;
+  };
 }
 
 const ScoreSchema = new Schema(
   {
-    remark: {
-      type: String,
-    },
-    score: {
-      type: Number,
-      required: true,
-    },
+    score_student: {
+        remark: {
+            type: String,
+          },
+          score: {
+            type: Number,
+            required: true,
+          },
+    }
   },
   { timestamps: true }
 );

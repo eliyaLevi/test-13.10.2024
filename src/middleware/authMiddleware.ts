@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 //לפני שאממש בפועל אני מגדיר אינטרפייס שיכלול משתמש
 
 interface AuthRequest extends Request {
-    user?: { userId: string, role?: string }
+    user?: { userId: string, status?: string }
 };
 
 
@@ -20,7 +20,7 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     }
     try {
         //ניסיון לאמת את הטוקן
-        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string, role: string }
+        const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { userId: string, tsatus: string }
         //אם האימות מצליח אני מוסיף את פרטי המשתמש לאובייקט הבקשה
         req.user = decoded;
         //ממשיך לפונקציה הבאה בשרשרת הטיפול
@@ -30,9 +30,9 @@ export const authMiddleware = (req: AuthRequest, res: Response, next: NextFuncti
     }
 }
 
-export const managerAuthMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
-    if (req.user?.role !=='manager') {
-        res.status(403).json({message: "Access denied, Managers only!"})
+export const teacherAuthMiddleware = (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (req.user?.status !=='teacher') {
+        res.status(403).json({message: "Access denied, teacher only!"})
     } else {
         next()
     }

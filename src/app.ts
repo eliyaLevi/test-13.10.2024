@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { connectToDatabase } from './services/database';
 import authRoutes from './routes/authRoutes'
-// import userRoutes from './routes/userRoutes';
+import userRoutes from './routes/student';
 import cookieParser from 'cookie-parser';
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -19,7 +19,7 @@ app.use(cookieParser());
 connectToDatabase();
 
 app.use('/auth', authRoutes);
-// app.use('/users', userRoutes)
+app.use('/users', userRoutes)
 
 const PORT = process.env.PORT || 3000;
 
