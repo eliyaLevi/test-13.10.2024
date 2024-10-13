@@ -9,7 +9,7 @@ export const createUser = async (userData: Partial<IUser>): Promise<IUser> => {
     return await user.save()
 };
 
-export const UpdateScoreById = async (id: string, updateData: Partial<IUser>): Promise<IUser | null> => {
+export const UpdateStudentById = async (id: string, updateData: Partial<IUser>): Promise<IUser | null> => {
     return await User.findByIdAndUpdate(id, updateData, { new: true }).select("-password")
 };
 

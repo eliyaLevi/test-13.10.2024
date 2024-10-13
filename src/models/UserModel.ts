@@ -12,7 +12,7 @@ export interface IUser extends Document {
   status: "teacher" | "student";
   className: string
   cless:  IClass["_id"];
-  score:  IScore["_id"];
+  scores:  IScore["_id"];
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
@@ -51,9 +51,10 @@ const UserSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "class",
     },
-    score: {
+    scores: {
       type:[ Schema.Types.ObjectId],
       ref: "score",
+      defolt: []
     }
   },
   { timestamps: true }
