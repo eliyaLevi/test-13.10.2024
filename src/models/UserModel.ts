@@ -1,17 +1,18 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types } from "mongoose";
+import validator from "validator";
 import bcrypt from "bcrypt";
-import { IDepartment } from "./Department";
+import { IClass } from "./classModel";
+import { IScore } from "./scoreModel";
 
 export interface IUser extends Document {
   username: string;
+  address: string;
+  email: string;
   password: string;
-  role: "employee" | "manager";
-  salary: number;
-  yearsOfExperience: number;
-  startDate: Date;
-  age: number;
-  lastLogin: Date;
-  department: IDepartment["_id"];
+  status: "teacher" | "student";
+  className: string
+  cless:  IClass["_id"];
+  score:  IScore["_id"];
   comparePassword(userPassword: string): Promise<boolean>;
 }
 
@@ -22,38 +23,38 @@ const UserSchema = new Schema(
       required: true,
       unique: true,
     },
+    address: {
+      type: String,
+    },
     password: {
       type: String,
       required: true,
+      minlength: 4,
     },
-    role: {
+    email: {
       type: String,
-      enum: ["employee", "manager"],
-      default: "employee",
-    },
-    salary: {
-      type: Number,
       required: true,
+      validate: [validator.isEmail, "המייל לא תקין"],
+      match: [
+        /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+        "Please fill a valid email address",
+      ],
     },
-    yearsOfExperience: {
-      type: Number,
-      required: true,
+    status: {
+      type: String,
+      required: true
     },
-    startDate: {
-      type: Date,
-      required: true,
+    className: {
+      type: String,
     },
-    age: {
-      type: Number,
-      required: true,
-    },
-    lastLogin: {
-      type: Date,
-    },
-    department: {
+    class: {
       type: Schema.Types.ObjectId,
-      ref: "department",
+      ref: "class",
     },
+    score: {
+      type:[ Schema.Types.ObjectId],
+      ref: "score",
+    }
   },
   { timestamps: true }
 );
@@ -63,7 +64,7 @@ UserSchema.pre<IUser>("save", async function (next) {
   if (!this.isModified("password")) return next();
 
   this.password = await bcrypt.hash(this.password, 10);
-  
+
   next();
 });
 
@@ -75,8 +76,8 @@ UserSchema.methods.comparePassword = async function (
 };
 
 // מגדיר מאפיין ספציפי בסכסמה כאינדקס
-UserSchema.index({ role: 1 });
 UserSchema.index({ username: 1 });
-UserSchema.index({ salary: 1 });
+UserSchema.index({ className: 1 });
+
 
 export default mongoose.model<IUser>("User", UserSchema);

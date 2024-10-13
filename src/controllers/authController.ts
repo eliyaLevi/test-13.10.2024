@@ -1,26 +1,32 @@
 import { Request, Response } from "express";
-import User from "../models/User";
+import User from "../models/UserModel";
 import { generateToken } from "../utils/auth";
-import { createUser } from "../services/userService";
+import { createUser, findClassName } from "../services/userService";
 
 // פונקציה להרשמה של משתמש חדש
 export const register = async (req: Request, res: Response) => {
-    const { username, password, role, salary, yearsOfExperience, startDate, age, departmentId } = req.body;
+    const { username, address, email, password, status, className } = req.body;
 
     try {
+        if(req.body.status === "student"){
+           const result  = findClassName(req.body.className)
+           if(!result){
+            res.status(401).json({ message: "הכיתה שבחרת לא נמצאת" })
+           }
+        }
         const user = await createUser({
-            username, password, role, salary, yearsOfExperience, startDate, age
-        }, departmentId);
+            username, address, email, password, status, className
+        });
         // אם המשתמש הוא מנהל תייצר לו טוקן
-        if (user.role === 'manager') {
-            res.status(201).json({ message: "נרשמת בהצלחה אדוני המנהל" })
+        if (user.status === 'teacher') {
+            res.status(201).json({ message: "נרשמת בהצלחה מרצה יקר" })
         } else {
-            res.status(201).json({ message: "נרשמת בהצלחה עבד " })
+            res.status(201).json({ message: "נרשמת בהצלחה סטודנט יקר " })
         }
 
     } catch (error) {
         console.log(error);
-        res.status(400).json("תקלה בהרשמה")
+        res.status(400).json("כ תקלה בהרשמה")
     }
 }
 
@@ -35,11 +41,9 @@ export const login = async (req: Request, res: Response) => {
         return
     };
 
-    // לעדכן מתי נכנס
-    user.lastLogin = new Date();
     await user.save()
 
-    const token = generateToken(user.id, user.role);
+    const token = generateToken(user.id, user.status);
     res.cookie('token', token, {
         httpOnly:true,
         secure: false,
